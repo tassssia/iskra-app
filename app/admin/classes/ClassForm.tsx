@@ -21,16 +21,58 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
   const [maxSpots, setMaxSpots] = useState("10")
   const [loading, setLoading] = useState(false)
   const [notify, setNotify] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+
+  async function fetchClasses() {
+    const res = await fetch("/api/classes")
+    const data = await res.json()
+    setClasses(data)
+  }
+
+  function showNotify(msg: string) {
+    setNotify(msg)
+    setTimeout(() => setNotify(null), 3000)
+  }
+
+  function startEdit(c: Class) {
+    setEditingId(c.id)
+    setTitle(c.title)
+    setDescription(c.description ?? "")
+    setDate(c.date.slice(0, 16))
+    setDuration(String(c.duration))
+    setMaxSpots(String(c.maxSpots))
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setTitle("")
+    setDescription("")
+    setDate("")
+    setDuration("60")
+    setMaxSpots("10")
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
 
-    await fetch("/api/classes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, date, duration, maxSpots }),
-    })
+    if (editingId) {
+      await fetch("/api/classes", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingId, title, description, date, duration, maxSpots }),
+      })
+      showNotify("Заняття оновлено")
+      setEditingId(null)
+    } else {
+      await fetch("/api/classes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, date, duration, maxSpots }),
+      })
+      showNotify("Заняття створено")
+    }
 
     setTitle("")
     setDescription("")
@@ -38,10 +80,20 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
     setDuration("60")
     setMaxSpots("10")
     setLoading(false)
+    fetchClasses()
+  }
 
-    const res = await fetch("/api/classes")
-    const data = await res.json()
-    setClasses(data)
+  async function handleDelete(id: string) {
+    if (!confirm("Видалити заняття? Всі записи також будуть видалені.")) return
+
+    await fetch("/api/classes", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    })
+
+    showNotify("Заняття видалено")
+    fetchClasses()
   }
 
   async function handleNotify(classId: string) {
@@ -51,8 +103,7 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
       body: JSON.stringify({ classId }),
     })
     const data = await res.json()
-    setNotify(`Надіслано нагадувань: ${data.sent}`)
-    setTimeout(() => setNotify(null), 3000)
+    showNotify(`Надіслано нагадувань: ${data.sent}`)
   }
 
   return (
@@ -64,7 +115,9 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
       )}
 
       <section className="bg-white border rounded-xl p-6 mb-8">
-        <h2 className="text-lg font-medium mb-4">Нове заняття</h2>
+        <h2 className="text-lg font-medium mb-4">
+          {editingId ? "Редагування заняття" : "Нове заняття"}
+        </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="text"
@@ -104,13 +157,24 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
               className="border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black w-full"
             />
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-black text-white rounded-lg py-2 hover:bg-gray-800 transition disabled:opacity-50"
-          >
-            {loading ? "Створення..." : "Створити заняття"}
-          </button>
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-black text-white rounded-lg py-2 hover:bg-gray-800 transition disabled:opacity-50"
+            >
+              {loading ? "Збереження..." : editingId ? "Зберегти зміни" : "Створити заняття"}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="border rounded-lg px-4 py-2 hover:bg-gray-50 transition"
+              >
+                Скасувати
+              </button>
+            )}
+          </div>
         </form>
       </section>
 
@@ -132,7 +196,7 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
                       {new Date(c.date).toLocaleString("uk-UA")} · {c.duration} хв
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500">
                       {c._count.bookings} / {c.maxSpots} місць
                     </span>
@@ -141,6 +205,18 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
                       className="text-sm border rounded-lg px-3 py-1 hover:bg-gray-50 transition"
                     >
                       Нагадати
+                    </button>
+                    <button
+                      onClick={() => startEdit(c)}
+                      className="text-sm border rounded-lg px-3 py-1 hover:bg-gray-50 transition"
+                    >
+                      Редагувати
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      className="text-sm border border-red-200 text-red-400 rounded-lg px-3 py-1 hover:bg-red-50 transition"
+                    >
+                      Видалити
                     </button>
                   </div>
                 </div>

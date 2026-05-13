@@ -113,7 +113,7 @@ export default function StudentsClient({ users }: { users: User[] }) {
           <button
             key={u.id}
             onClick={() => setSelected(u.id)}
-            className="text-left border rounded-xl p-5 hover:bg-gray-50 transition w-full"
+            className="text-left border rounded-xl p-5 hover:bg-gray-50 hover:border-gray-300 transition w-full cursor-pointer"
           >
             <p className="font-medium">{u.name}</p>
             <p className="text-sm text-gray-400 truncate">{u.email}</p>
