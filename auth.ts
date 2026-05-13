@@ -37,17 +37,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     jwt({ token, user }) {
-        if (user) token.role = (user as any).role
-        return token
+      if (user) {
+        token.role = (user as any).role
+        token.id = user.id
+      }
+      return token
     },
     session({ session, token }) {
-        session.user = {
+      session.user = {
         ...session.user,
         role: token.role,
-        } as any
-        return session
+        id: token.sub,
+      } as any
+      return session
     },
-  },
+  }, 
   pages: {
     signIn: "/login",
   },
