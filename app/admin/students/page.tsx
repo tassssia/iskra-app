@@ -21,6 +21,7 @@ export default async function StudentsPage() {
         select: {
           id: true,
           attended: true,
+          burned: true,
           class: {
             select: { title: true, date: true },
           },
@@ -30,10 +31,18 @@ export default async function StudentsPage() {
         select: {
           id: true,
           type: true,
+          status: true,
           totalClasses: true,
           usedClasses: true,
+          burnedClasses: true,
+          startDate: true,
           endDate: true,
-          frozen: true,
+          paidAt: true,
+          freezeStart: true,
+          freezeEnd: true,
+          freezeWeeks: true,
+          notes: true,
+          createdAt: true,
         },
       },
     },
@@ -52,7 +61,12 @@ export default async function StudentsPage() {
     })),
     subscriptions: u.subscriptions.map((s) => ({
       ...s,
-      endDate: s.endDate ? s.endDate.toISOString() : null,
+      startDate: s.startDate?.toISOString() ?? null,
+      endDate: s.endDate?.toISOString() ?? null,
+      paidAt: s.paidAt?.toISOString() ?? null,
+      freezeStart: s.freezeStart?.toISOString() ?? null,
+      freezeEnd: s.freezeEnd?.toISOString() ?? null,
+      createdAt: s.createdAt.toISOString(),
     })),
   }))
 

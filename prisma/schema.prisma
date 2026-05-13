@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum SubscriptionType {
+  SINGLE
+  PACK_4
+  PACK_8
+  PACK_12
+}
+
+enum SubscriptionStatus {
+  PENDING_PAYMENT
+  ACTIVE
+  FROZEN
+  EXPIRED
+  REFUNDED
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(STUDENT)
+  phone         String?
+  createdAt     DateTime       @default(now())
+  bookings      Booking[]
+  subscriptions Subscription[]
+}
+
+model Class {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  duration    Int       @default(60)
+  maxSpots    Int       @default(10)
+  createdAt   DateTime  @default(now())
+  bookings    Booking[]
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  userId         String
+  classId        String
+  subscriptionId String?
+  attended       Boolean       @default(false)
+  burned         Boolean       @default(false)
+  refunded       Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  user           User          @relation(fields: [userId], references: [id])
+  class          Class         @relation(fields: [classId], references: [id])
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@unique([userId, classId])
+}
+
+model Subscription {
+  id            String             @id @default(cuid())
+  userId        String
+  type          SubscriptionType
+  status        SubscriptionStatus @default(PENDING_PAYMENT)
+  totalClasses  Int
+  usedClasses   Int                @default(0)
+  burnedClasses Int                @default(0)
+  startDate     DateTime?
+  endDate       DateTime?
+  paidAt        DateTime?
+  freezeStart   DateTime?
+  freezeEnd     DateTime?
+  freezeWeeks   Int                @default(0)
+  notes         String?
+  createdAt     DateTime           @default(now())
+  user          User               @relation(fields: [userId], references: [id])
+  bookings      Booking[]
+}

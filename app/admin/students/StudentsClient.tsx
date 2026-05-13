@@ -1,19 +1,29 @@
 "use client"
 
 import { useState } from "react"
+import SubscriptionForm from "./SubscriptionForm"
 
 type Subscription = {
   id: string
   type: string
+  status: string
   totalClasses: number
   usedClasses: number
+  burnedClasses: number
+  startDate: string | null
   endDate: string | null
-  frozen: boolean
+  paidAt: string | null
+  freezeStart: string | null
+  freezeEnd: string | null
+  freezeWeeks: number
+  notes: string | null
+  createdAt: string
 }
 
 type Booking = {
   id: string
   attended: boolean
+  burned: boolean
   class: { title: string; date: string }
 }
 
@@ -55,25 +65,8 @@ export default function StudentsClient({ users }: { users: User[] }) {
           </div>
 
           <div className="border rounded-xl p-6">
-            <h3 className="font-medium mb-3">Абонементи</h3>
-            {selectedUser.subscriptions.length === 0 ? (
-              <p className="text-sm text-gray-400">Немає абонементів</p>
-            ) : (
-              selectedUser.subscriptions.map((s) => (
-                <div key={s.id} className="text-sm border rounded-lg p-3 mb-2">
-                  <p className="font-medium">{s.type}</p>
-                  <p className="text-gray-500">
-                    {s.usedClasses} / {s.totalClasses} занять використано
-                  </p>
-                  {s.endDate && (
-                    <p className="text-gray-400">
-                      До {new Date(s.endDate).toLocaleDateString("uk-UA")}
-                    </p>
-                  )}
-                  {s.frozen && <span className="text-blue-500">Заморожений</span>}
-                </div>
-              ))
-            )}
+            <h3 className="font-medium mb-4">Абонементи</h3>
+            <SubscriptionForm userId={selectedUser.id} />
           </div>
 
           <div className="border rounded-xl p-6">
