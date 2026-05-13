@@ -20,6 +20,7 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
   const [duration, setDuration] = useState("60")
   const [maxSpots, setMaxSpots] = useState("10")
   const [loading, setLoading] = useState(false)
+  const [notify, setNotify] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,8 +44,25 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
     setClasses(data)
   }
 
+  async function handleNotify(classId: string) {
+    const res = await fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ classId }),
+    })
+    const data = await res.json()
+    setNotify(`Надіслано нагадувань: ${data.sent}`)
+    setTimeout(() => setNotify(null), 3000)
+  }
+
   return (
     <>
+      {notify && (
+        <div className="fixed bottom-6 right-6 bg-black text-white text-sm rounded-xl px-5 py-3">
+          {notify}
+        </div>
+      )}
+
       <section className="bg-white border rounded-xl p-6 mb-8">
         <h2 className="text-lg font-medium mb-4">Нове заняття</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -114,9 +132,17 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
                       {new Date(c.date).toLocaleString("uk-UA")} · {c.duration} хв
                     </p>
                   </div>
-                  <span className="text-sm text-gray-500">
-                    {c._count.bookings} / {c.maxSpots} місць
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-500">
+                      {c._count.bookings} / {c.maxSpots} місць
+                    </span>
+                    <button
+                      onClick={() => handleNotify(c.id)}
+                      className="text-sm border rounded-lg px-3 py-1 hover:bg-gray-50 transition"
+                    >
+                      Нагадати
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
