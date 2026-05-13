@@ -22,6 +22,7 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
   const [loading, setLoading] = useState(false)
   const [notify, setNotify] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
 
   async function fetchClasses() {
     const res = await fetch("/api/classes")
@@ -83,15 +84,16 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
     fetchClasses()
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Видалити заняття? Всі записи також будуть видалені.")) return
+  async function handleDelete() {
+    if (!deleteId) return
 
     await fetch("/api/classes", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: deleteId }),
     })
 
+    setDeleteId(null)
     showNotify("Заняття видалено")
     fetchClasses()
   }
@@ -111,6 +113,30 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
       {notify && (
         <div className="fixed bottom-6 right-6 bg-black text-white text-sm rounded-xl px-5 py-3">
           {notify}
+        </div>
+      )}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4">
+            <h3 className="font-medium text-lg mb-2">Видалити заняття?</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Всі записи учнів на це заняття також будуть видалені. Цю дію неможливо скасувати.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteId(null)}
+                className="flex-1 border rounded-lg py-2 text-sm hover:bg-gray-50 transition"
+              >
+                Скасувати
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm hover:bg-red-600 transition"
+              >
+                Видалити
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -213,7 +239,7 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
                       Редагувати
                     </button>
                     <button
-                      onClick={() => handleDelete(c.id)}
+                      onClick={() => setDeleteId(c.id)}
                       className="text-sm border border-red-200 text-red-400 rounded-lg px-3 py-1 hover:bg-red-50 transition"
                     >
                       Видалити
