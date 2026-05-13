@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { PrismaClient } from "@prisma/client"
 import Link from "next/link"
+import { signOut } from "@/auth"
 
 const prisma = new PrismaClient()
 
@@ -49,6 +50,19 @@ export default async function DashboardPage() {
           >
             Розклад
           </Link>
+          <form
+            action={async () => {
+              "use server"
+              await signOut({ redirectTo: "/login" })
+            }}
+          >
+            <button
+              type="submit"
+              className="text-sm border rounded-lg px-4 py-2 hover:bg-gray-50 transition"
+            >
+              Вийти
+            </button>
+          </form>
         </div>
       </div>
 
