@@ -10,6 +10,7 @@ export default async function SchedulePage() {
   if (!session) redirect("/login")
 
   const userId = (session.user as any).id
+  const isAdmin = (session.user as any).role === "ADMIN"
 
   const classes = await prisma.class.findMany({
     orderBy: { date: "asc" },
@@ -30,7 +31,11 @@ export default async function SchedulePage() {
   return (
     <main className="max-w-3xl mx-auto p-8">
       <h1 className="text-2xl font-semibold mb-8">Розклад занять</h1>
-      <ScheduleClient classes={serialized} bookedClassIds={bookedClassIds} />
+      <ScheduleClient
+        classes={serialized}
+        bookedClassIds={bookedClassIds}
+        isAdmin={isAdmin}
+      />
     </main>
   )
 }

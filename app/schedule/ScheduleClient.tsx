@@ -15,9 +15,11 @@ type Class = {
 export default function ScheduleClient({
   classes,
   bookedClassIds,
+  isAdmin,
 }: {
   classes: Class[]
   bookedClassIds: string[]
+  isAdmin: boolean
 }) {
   const [booked, setBooked] = useState<string[]>(bookedClassIds)
   const [loading, setLoading] = useState<string | null>(null)
@@ -70,7 +72,9 @@ export default function ScheduleClient({
               </p>
             </div>
             <div className="ml-4 flex-shrink-0">
-              {isBooked ? (
+              {isAdmin ? (
+                <span className="text-sm text-gray-400">Перегляд</span>
+              ) : isBooked ? (
                 <button
                   onClick={() => handleCancel(c.id)}
                   disabled={isLoading}
