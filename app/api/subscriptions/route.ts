@@ -11,6 +11,18 @@ const PACK_SIZES: Record<string, number> = {
   PACK_12: 12,
 }
 
+async function expireOldSubscriptions(userId: string) {
+  const now = new Date()
+  await prisma.subscription.updateMany({
+    where: {
+      userId,
+      status: "ACTIVE",
+      endDate: { lt: now },
+    },
+    data: { status: "EXPIRED" },
+  })
+}
+
 export async function GET(req: Request) {
   const session = await auth()
   if (!session || (session.user as any).role !== "ADMIN") {
@@ -20,6 +32,10 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const userId = searchParams.get("userId")
 
+  if (userId) {
+    await expireOldSubscriptions(userId)
+  }
+  
   const subscriptions = await prisma.subscription.findMany({
     where: userId ? { userId } : undefined,
     orderBy: { createdAt: "desc" },

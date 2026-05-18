@@ -39,8 +39,26 @@ type User = {
 
 export default function StudentsClient({ users }: { users: User[] }) {
   const [selected, setSelected] = useState<string | null>(null)
+  const [bookings, setBookings] = useState<Booking[]>([])
 
   const selectedUser = users.find((u) => u.id === selected)
+
+  function selectUser(id: string) {
+    const user = users.find((u) => u.id === id)
+    setSelected(id)
+    setBookings(user?.bookings ?? [])
+  }
+
+  async function handleAttendance(bookingId: string, attended: boolean, burned: boolean) {
+    await fetch("/api/attendance", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId, attended, burned }),
+    })
+    setBookings((prev) =>
+      prev.map((b) => b.id === bookingId ? { ...b, attended, burned } : b)
+    )
+  }
 
   if (selectedUser) {
     return (
@@ -71,13 +89,15 @@ export default function StudentsClient({ users }: { users: User[] }) {
 
           <div className="border rounded-xl p-6">
             <h3 className="font-medium mb-3">Заняття</h3>
-            {selectedUser.bookings.length === 0 ? (
+            {bookings.length === 0 ? (
               <p className="text-sm text-gray-400">Немає записів</p>
             ) : (
-              selectedUser.bookings.map((b) => (
+              bookings.map((b) => (
                 <div
                   key={b.id}
-                  className="text-sm border rounded-lg p-3 mb-2 flex justify-between items-center"
+                  className={`text-sm border rounded-lg p-3 mb-2 flex justify-between items-center ${
+                    b.burned ? "border-red-200 bg-red-50" : ""
+                  }`}
                 >
                   <div>
                     <p className="font-medium">{b.class.title}</p>
@@ -85,9 +105,46 @@ export default function StudentsClient({ users }: { users: User[] }) {
                       {new Date(b.class.date).toLocaleString("uk-UA")}
                     </p>
                   </div>
-                  {b.attended && (
-                    <span className="text-xs text-green-500">✓ Відвідала</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {b.attended && !b.burned && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-green-500">✓ Відвідано</span>
+                        <button
+                          onClick={() => handleAttendance(b.id, false, false)}
+                          className="text-xs text-gray-300 hover:text-gray-500 transition"
+                        >
+                          Скасувати
+                        </button>
+                      </div>
+                    )}
+                    {b.burned && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-red-400">✗ Згоріло</span>
+                        <button
+                          onClick={() => handleAttendance(b.id, false, false)}
+                          className="text-xs text-gray-300 hover:text-gray-500 transition"
+                        >
+                          Скасувати
+                        </button>
+                      </div>
+                    )}
+                    {!b.attended && !b.burned && (
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleAttendance(b.id, true, false)}
+                          className="text-xs border border-green-200 text-green-600 rounded px-2 py-1 hover:bg-green-50 transition"
+                        >
+                          Був
+                        </button>
+                        <button
+                          onClick={() => handleAttendance(b.id, false, true)}
+                          className="text-xs border border-red-200 text-red-400 rounded px-2 py-1 hover:bg-red-50 transition"
+                        >
+                          Згоріло
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))
             )}
@@ -105,7 +162,7 @@ export default function StudentsClient({ users }: { users: User[] }) {
         users.map((u) => (
           <button
             key={u.id}
-            onClick={() => setSelected(u.id)}
+            onClick={() => selectUser(u.id)}
             className="text-left border rounded-xl p-5 hover:bg-gray-50 hover:border-gray-300 transition w-full cursor-pointer"
           >
             <p className="font-medium">{u.name}</p>
