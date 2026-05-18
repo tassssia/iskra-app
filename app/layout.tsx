@@ -23,9 +23,14 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-gray-50">
         <header className="bg-white border-b">
           <div className="max-w-4xl mx-auto px-8 py-4 flex justify-between items-center">
-            <Link href="/dashboard" className="font-semibold text-lg tracking-tight">
-              Iskra
-            </Link>
+            <div className="flex justify-between items-center w-full">
+              <Link href="/dashboard" className="font-semibold text-lg tracking-tight">
+                Iskra
+              </Link>
+              <Link href="/profile" className="text-sm text-gray-400 hover:text-black transition">
+                Профіль
+              </Link>
+            </div>
           </div>
         </header>
         <div className="flex-1">{children}</div>
