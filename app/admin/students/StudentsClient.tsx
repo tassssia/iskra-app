@@ -40,6 +40,7 @@ type User = {
 export default function StudentsClient({ users }: { users: User[] }) {
   const [selected, setSelected] = useState<string | null>(null)
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [search, setSearch] = useState("")
 
   const selectedUser = users.find((u) => u.id === selected)
 
@@ -155,21 +156,35 @@ export default function StudentsClient({ users }: { users: User[] }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {users.length === 0 ? (
-        <p className="text-gray-400">Учнів ще немає</p>
-      ) : (
-        users.map((u) => (
-          <button
-            key={u.id}
-            onClick={() => selectUser(u.id)}
-            className="text-left border rounded-xl p-5 hover:bg-gray-50 hover:border-gray-300 transition w-full cursor-pointer"
-          >
-            <p className="font-medium">{u.name}</p>
-            <p className="text-sm text-gray-400 truncate">{u.email}</p>
-          </button>
-        ))
-      )}
+    <div>
+      <input
+        type="text"
+        placeholder="Пошук за іменем або email..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black w-full mb-4"
+      />
+      <div className="grid grid-cols-2 gap-3">
+        {users.length === 0 ? (
+          <p className="text-gray-400">Учнів ще немає</p>
+        ) : (
+          users
+            .filter((u) =>
+              u.name.toLowerCase().includes(search.toLowerCase()) ||
+              u.email.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((u) => (
+            <button
+              key={u.id}
+              onClick={() => selectUser(u.id)}
+              className="text-left border rounded-xl p-5 hover:bg-gray-50 hover:border-gray-300 transition w-full cursor-pointer"
+            >
+              <p className="font-medium">{u.name}</p>
+              <p className="text-sm text-gray-400 truncate">{u.email}</p>
+            </button>
+          ))
+        )}
+      </div>
     </div>
   )
 }
