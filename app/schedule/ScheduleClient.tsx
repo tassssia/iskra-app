@@ -109,7 +109,7 @@ export default function ScheduleClient({
             if (dateTo && date > new Date(dateTo + "T23:59:59")) return false
             return true
           })
-          .map((c) => {
+          .map((c: any) => {
             const isBooked = booked.includes(c.id)
             const isFull = c._count.bookings >= c.maxSpots && !isBooked
             const isLoading = loading === c.id

@@ -21,9 +21,9 @@ export default async function SchedulePage() {
     where: { userId },
   })
 
-  const bookedClassIds = bookings.map((b) => b.classId)
+  const bookedClassIds = bookings.map((b: any) => b.classId)
 
-  const serialized = classes.map((c) => ({
+  const serialized = classes.map((c: any) => ({
     ...c,
     date: c.date.toISOString(),
   }))

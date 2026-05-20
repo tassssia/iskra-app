@@ -42,7 +42,7 @@ export async function GET(req: Request) {
     include: { user: { select: { name: true } } },
   })
 
-  const serialized = subscriptions.map((s) => ({
+  const serialized = subscriptions.map((s: any) => ({
     ...s,
     startDate: s.startDate?.toISOString() ?? null,
     endDate: s.endDate?.toISOString() ?? null,

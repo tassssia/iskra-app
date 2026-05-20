@@ -57,7 +57,7 @@ export default function StudentsClient({ users }: { users: User[] }) {
       body: JSON.stringify({ bookingId, attended, burned }),
     })
     setBookings((prev) =>
-      prev.map((b) => b.id === bookingId ? { ...b, attended, burned } : b)
+      prev.map((b: any) => b.id === bookingId ? { ...b, attended, burned } : b)
     )
   }
 
@@ -93,7 +93,7 @@ export default function StudentsClient({ users }: { users: User[] }) {
             {bookings.length === 0 ? (
               <p className="text-sm text-gray-400">Немає записів</p>
             ) : (
-              bookings.map((b) => (
+              bookings.map((b: any) => (
                 <div
                   key={b.id}
                   className={`text-sm border rounded-lg p-3 mb-2 flex justify-between items-center ${
@@ -173,7 +173,7 @@ export default function StudentsClient({ users }: { users: User[] }) {
               u.name.toLowerCase().includes(search.toLowerCase()) ||
               u.email.toLowerCase().includes(search.toLowerCase())
             )
-            .map((u) => (
+            .map((u: any) => (
             <button
               key={u.id}
               onClick={() => selectUser(u.id)}

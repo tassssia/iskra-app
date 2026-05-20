@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   const date = new Date(classData.date).toLocaleString("uk-UA")
 
   const results = await Promise.all(
-    classData.bookings.map((b) =>
+    classData.bookings.map((b: any) =>
       resend.emails.send({
         from: "Iskra Studio <onboarding@resend.dev>",
         to: b.user.email,

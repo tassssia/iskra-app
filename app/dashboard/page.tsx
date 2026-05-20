@@ -123,7 +123,7 @@ export default async function DashboardPage() {
           <p className="text-gray-400">Немає запланованих занять</p>
         ) : (
           <div className="flex flex-col gap-3">
-            {upcoming.map((b) => (
+            {upcoming.map((b: any) => (
               <div key={b.id} className="bg-white border rounded-xl p-4">
                 <p className="font-medium">{b.class.title}</p>
                 <p className="text-sm text-gray-400 mt-1">
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
           <p className="text-gray-400">Історія порожня</p>
         ) : (
           <div className="flex flex-col gap-3">
-            {past.map((b) => (
+            {past.map((b: any) => (
               <div key={b.id} className="bg-white border rounded-xl p-4 opacity-60">
                 <p className="font-medium">{b.class.title}</p>
                 <p className="text-sm text-gray-400 mt-1">

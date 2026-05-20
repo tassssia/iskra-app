@@ -59,7 +59,7 @@ export default function AnalyticsClient() {
           <p className="text-gray-400 text-sm">Немає даних</p>
         ) : (
           <div className="flex flex-col gap-2">
-            {data.popularClasses.map((c, i) => (
+            {data.popularClasses.map((c: any, i: any) => (
               <div key={i} className="flex justify-between items-center border rounded-lg p-3">
                 <p className="text-sm font-medium">{c.title}</p>
                 <span className="text-sm text-gray-400">{c.bookings} записів</span>

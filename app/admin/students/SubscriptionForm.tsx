@@ -169,7 +169,7 @@ export default function SubscriptionForm({ userId }: { userId: string }) {
         <p className="text-sm text-gray-400">Абонементів ще немає</p>
       ) : (
         <div className="flex flex-col gap-2">
-          {subs.map((s) => (
+          {subs.map((s: any) => (
             <div key={s.id} className="border rounded-xl overflow-hidden">
               <button
                 onClick={() => setExpanded(expanded === s.id ? null : s.id)}
@@ -198,7 +198,7 @@ export default function SubscriptionForm({ userId }: { userId: string }) {
                             onChange={(e) => setEditStatus(e.target.value)}
                             className="border rounded-lg px-3 py-1.5 text-sm w-full outline-none"
                           >
-                            {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                            {Object.entries(STATUS_LABELS).map(([val, label]: [string, string]) => (
                               <option key={val} value={val}>{label}</option>
                             ))}
                           </select>

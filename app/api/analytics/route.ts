@@ -26,7 +26,7 @@ export async function GET() {
   const popularClasses = classes
     .sort((a, b) => b._count.bookings - a._count.bookings)
     .slice(0, 5)
-    .map((c) => ({
+    .map((c: any) => ({
       title: c.title,
       bookings: c._count.bookings,
       date: c.date.toISOString(),

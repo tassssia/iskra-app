@@ -49,17 +49,17 @@ export default async function StudentsPage() {
     orderBy: { createdAt: "desc" },
   })
 
-  const serialized = users.map((u) => ({
+  const serialized = users.map((u: any) => ({
     ...u,
     createdAt: u.createdAt.toISOString(),
-    bookings: u.bookings.map((b) => ({
+    bookings: u.bookings.map((b: any) => ({
       ...b,
       class: {
         ...b.class,
         date: b.class.date.toISOString(),
       },
     })),
-    subscriptions: u.subscriptions.map((s) => ({
+    subscriptions: u.subscriptions.map((s: any) => ({
       ...s,
       startDate: s.startDate?.toISOString() ?? null,
       endDate: s.endDate?.toISOString() ?? null,

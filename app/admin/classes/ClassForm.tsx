@@ -210,7 +210,7 @@ export default function ClassForm({ initial }: { initial: Class[] }) {
           <p className="text-gray-400">Занять ще немає</p>
         ) : (
           <div className="flex flex-col gap-3">
-            {classes.map((c) => (
+            {classes.map((c: any) => (
               <div key={c.id} className="bg-white border rounded-xl p-4">
                 <div className="flex justify-between items-start">
                   <div>

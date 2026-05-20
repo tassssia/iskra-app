@@ -23,7 +23,7 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 })
   }
 
-  const events = user.bookings.map((b) => {
+  const events = user.bookings.map((b: any) => {
     const start = new Date(b.class.date)
     const end = new Date(start.getTime() + b.class.duration * 60000)
 
