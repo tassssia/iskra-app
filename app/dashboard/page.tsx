@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { PrismaClient } from "@prisma/client"
 import Link from "next/link"
 import { signOut } from "@/auth"
+import CalendarSync from "./CalendarSync"
 
 const prisma = new PrismaClient()
 
@@ -33,7 +34,7 @@ export default async function DashboardPage() {
           >
             <button
               type="submit"
-              className="text-sm border rounded-lg px-4 py-2 hover:bg-gray-50 transition"
+              className="text-sm border rounded-lg px-4 py-2 hover:bg-gray-50 transition cursor-pointer"
             >
               Вийти
             </button>
@@ -108,7 +109,7 @@ export default async function DashboardPage() {
           >
             <button
               type="submit"
-              className="text-sm border rounded-lg px-4 py-2 hover:bg-gray-50 transition"
+              className="text-sm border rounded-lg px-4 py-2 hover:bg-gray-50 transition cursor-pointer"
             >
               Вийти
             </button>
@@ -133,6 +134,10 @@ export default async function DashboardPage() {
           </div>
         )}
       </section>
+
+      <div className="my-8">
+        <CalendarSync />
+      </div>
 
       <section>
         <h2 className="text-lg font-medium mb-4">Історія занять</h2>
