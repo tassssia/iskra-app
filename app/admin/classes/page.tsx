@@ -14,7 +14,7 @@ export default async function AdminClassesPage() {
     include: { _count: { select: { bookings: true } } },
   })
 
-  const serialized = classes.map((c) => ({
+  const serialized = classes.map((c: any) => ({
     ...c,
     date: c.date.toISOString(),
   }))
